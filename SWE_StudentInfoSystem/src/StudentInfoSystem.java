@@ -82,7 +82,14 @@ public class StudentInfoSystem extends JFrame implements ActionListener{
 		Component c = (Component)e.getSource();
 		
 		if(c==add){
+			display.setText("");
 			db.add();
+			clear();
+		}
+		
+		if(c==view){
+			display.setText("");
+			db.view();
 			clear();
 		}
 	}
