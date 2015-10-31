@@ -32,7 +32,8 @@ public class StudentInfoDB {
 		
 		String id = StudentInfoSystem.input_id.getText().trim();	
 		try { 
-			String str = "select Id from student_info where Id LIKE '"+id+"' ";
+			String str = "select Id from student_info where Id = '"+id+"' ";
+			System.out.println(id);
 			rs = st.executeQuery(str);
 			
 			if(rs.next()) {
@@ -58,6 +59,50 @@ public class StudentInfoDB {
         }	
 	}
 	
+	public void update(){
+		
+		String id = StudentInfoSystem.input_id.getText().trim();
+		
+		String str = "select Id from student_info where Id = '"+id+"' ";
+		try {
+			rs = st.executeQuery(str);
+			
+			if(rs.next()){
+				String new_pnum = StudentInfoSystem.input_pnum.getText().trim();
+				
+				String sql2 ="update student_info set Phone_num = '"+new_pnum+"' where Id= '"+id+"'";
+				
+				st.executeUpdate(sql2);
+				
+				StudentInfoSystem.display.append("=============================================================" +"\n");
+			    StudentInfoSystem.display.append(" \t     학생 정보가 변경되었습니다.\n ");
+			    StudentInfoSystem.display.append(" ============================================================="+"\n");				
+			}
+			
+			else 
+				StudentInfoSystem.display.append("학생정보록에 해당 학번이 없습니다.");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	//	String new_pnum = StudentInfoSystem.input_pnum.getText().trim();
+		
+	//	String sql2 ="update student_info set Phone_num = '"+new_pnum+"' where Id= '"+id+"'";
+		/*try {
+			st.executeUpdate(sql2);
+			
+			 StudentInfoSystem.display.append("=============================================================" +"\n");
+		     StudentInfoSystem.display.append(" \t     학생 정보가 변경되었습니다.\n ");
+		     StudentInfoSystem.display.append(" ============================================================="+"\n");		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} */ 
+	}
+	
 	/*
 	public void dataSearch(){
 		System.out.print("책 제목을 입력해주세요: ");
@@ -69,6 +114,7 @@ public class StudentInfoDB {
 			
 			if(rs.next()) {
 				rs=st.getResultSet();
+				
 				
 				System.out.println("[search result]");
 				rs.beforeFirst();

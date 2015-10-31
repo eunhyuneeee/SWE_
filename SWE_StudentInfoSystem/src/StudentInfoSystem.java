@@ -9,8 +9,8 @@ public class StudentInfoSystem extends JFrame implements ActionListener{
 	static String _host = "localhost";
 	static String _port = "3306";
 	static String _user = "root";
-	static String _password = "0070";
-	static String _database = "student_info";
+	static String _password = "1234";
+	static String _database = "smu";
 	
 	static JTextArea display;
 	static JTextField input_id, input_name, input_depart, input_pnum;
@@ -83,6 +83,11 @@ public class StudentInfoSystem extends JFrame implements ActionListener{
 		
 		if(c==add){
 			db.add();
+			clear();
+		}
+		
+		else if (c==update){
+			db.update();
 			clear();
 		}
 	}
