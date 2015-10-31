@@ -167,6 +167,39 @@ public class StudentInfoDB {
 	
 			}
 	}
-	
+
+	public void all_view(){
+		
+		try {
+			String all = " select * from student_info ";
+			rs=st.executeQuery(all);
+			
+			if(rs.next()) {
+				rs=st.getResultSet();
+				
+				rs.beforeFirst();
+				StudentInfoSystem.display.append("====================================================================" +"\n");
+				StudentInfoSystem.display.append("    Id \t Name \t  Department \t\t Phonenumber  \n");
+				StudentInfoSystem.display.append("===================================================================="+"\n");
+				
+				while(rs.next()) {						
+					
+					String s_id = rs.getString(1);
+					String s_name = rs.getString(2);
+					String s_depart = rs.getString(3);
+					String s_pnum = rs.getString(4);
+					
+					StudentInfoSystem.display.append(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
+					System.out.println(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
+				}
+			} 
+			else
+				StudentInfoSystem.display.append("Data가 없습니다.");
+				
+		} catch(Exception e) {
+			// TODO Auto-generated catch block			
+			return;
+		}
+	}
 
 }

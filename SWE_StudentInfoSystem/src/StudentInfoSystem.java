@@ -13,14 +13,14 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 
 	static JTextArea display;
 	static JTextField input_id, input_name, input_depart, input_pnum;
-	static JButton add, delete, update, view, okay;
+	static JButton add, delete, update, view, okay, all;
 	
 	public final int NONE = 0;
 	public final int ADD = 1;
 	public final int UPDATE = 2;
 	public final int DELETE = 3;
 	public final int VIEW = 4;
-	
+
 	ResultSet rs = null;
 	String select;
 	String select2;
@@ -76,13 +76,15 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		delete.addActionListener(this);
 		right.add(view = new JButton("검         색"));
 		view.addActionListener(this);
+		right.add(all = new JButton("전체보기"));
+		all.addActionListener(this);
 		right.setPreferredSize(new Dimension(100, 400));
 		getContentPane().add("East", right);
 		
 		JPanel bottom = new JPanel();
 		bottom.add(okay = new JButton("확     인"));
 		okay.addActionListener(this);
-		getContentPane().add("South", bottom);
+		getContentPane().add("South", bottom);	
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -135,8 +137,16 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 				db.view();
 				clear();
 			}
+		}	
+			
+		else if (c == all){
+				db.all_view();
+				clear();
+				select="all";
 		}
 	}
+			
+	
 	
 
 	public void clear() {

@@ -32,7 +32,7 @@ public class InputSetting {
 			
 				case VIEW:
 					StudentInfoSystem.input_id.setEditable(true);
-					break;	
+					break;
 		}
 	}
 	
