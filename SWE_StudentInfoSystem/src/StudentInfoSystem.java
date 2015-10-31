@@ -87,6 +87,7 @@ public class StudentInfoSystem extends JFrame implements ActionListener{
 		}
 		
 		else if (c==update){
+			display.setText("");
 			db.update();
 			clear();
 		}
