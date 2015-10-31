@@ -8,12 +8,12 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	static String _host = "localhost";
 	static String _port = "3306";
 	static String _user = "root";
-	static String _password = "0070";
-	static String _database = "student_info";
+	static String _password = "1115088";
+	static String _database = "smu";
 
 	static JTextArea display;
 	static JTextField input_id, input_name, input_depart, input_pnum;
-	static JButton add, delete, update, view;
+	static JButton add, delete, update, view, all;
 
 	ResultSet rs = null;
 
@@ -69,6 +69,9 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 
 		button.add(view = new JButton("VIEW"));
 		view.addActionListener(this);
+		
+		button.add(all = new JButton("All"));
+		all.addActionListener(this);
 
 		getContentPane().add("South", button);
 	}
@@ -100,6 +103,11 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		if (c == view) {
 			display.setText("");
 			db.view();
+			clear();
+		}
+		if (c == all){
+			display.setText("");
+			db.all_view();
 			clear();
 		}
 	}
