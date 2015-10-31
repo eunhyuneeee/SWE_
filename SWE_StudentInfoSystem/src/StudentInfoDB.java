@@ -78,7 +78,6 @@ public class StudentInfoDB {
 			    StudentInfoSystem.display.append(" \t     학생 정보가 변경되었습니다.\n ");
 			    StudentInfoSystem.display.append(" ============================================================="+"\n");				
 			}
-			
 			else 
 				StudentInfoSystem.display.append("학생정보록에 해당 학번이 없습니다.");
 			
