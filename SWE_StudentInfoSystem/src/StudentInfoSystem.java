@@ -8,8 +8,8 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	static String _host = "localhost";
 	static String _port = "3306";
 	static String _user = "root";
-	static String _password = "0070";
-	static String _database = "student_info";
+	static String _password = "1234";
+	static String _database = "smu";
 
 	static JTextArea display;
 	static JTextField input_id, input_name, input_depart, input_pnum;
@@ -76,30 +76,35 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		StudentInfoDB db = new StudentInfoDB();
+		String id = input_id.getText().trim();
+		String name = input_name.getText().trim();
+		String depart = input_depart.getText().trim();
+		String pnum = input_pnum.getText().trim();
+		
 		db.dataBase();
 		Component c = (Component) e.getSource();
 
 		if (c == add) {
 			display.setText("");
-			db.add();
+			db.add(id, name, depart, pnum);
 			clear();
 		}
 
 		else if (c == update) {
 			display.setText("");
-			db.update();
+			db.update(id, pnum);
 			clear();
 		}
 
 		if (c == delete) {
 			display.setText("");
-			db.delete();
+			db.delete(id);
 			clear();
 		}
 		
 		if (c == view) {
 			display.setText("");
-			db.view();
+			db.view(id);
 			clear();
 		}
 	}

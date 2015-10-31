@@ -5,10 +5,11 @@ import java.sql.*;
 
 public class StudentInfoDB {
 
-	Connection con = null;
+	Connection con = null; 
 	java.sql.Statement st = null;
 	ResultSet rs = null;
 	int r = 0;
+	String check_sql, result_sql = null;
 
 	public void dataBase() {
 		String jdbcDriver = "com.mysql.jdbc.Driver";
@@ -28,12 +29,11 @@ public class StudentInfoDB {
 		}
 	}
 
-	public void add() {
+	public void add(String add_id, String name, String depart, String pnum) {
 
-		String id = StudentInfoSystem.input_id.getText().trim();
 		try {
-			String str = "select Id from student_info where Id LIKE '" + id + "' ";
-			rs = st.executeQuery(str);
+			check_sql = "select Id from student_info where Id LIKE '" + add_id + "' ";
+			rs = st.executeQuery(check_sql);
 
 			if (rs.next()) {
 				StudentInfoSystem.display
@@ -45,15 +45,11 @@ public class StudentInfoDB {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		String name = StudentInfoSystem.input_name.getText().trim();
-		String depart = StudentInfoSystem.input_depart.getText().trim();
-		String pnum = StudentInfoSystem.input_pnum.getText().trim();
 		
 		try {
-			String sql2 = "insert into student_info values" + "('" + id + "','" + name + "','" + depart + "','" + pnum
+			result_sql = "insert into student_info values" + "('" + add_id + "','" + name + "','" + depart + "','" + pnum
 					+ "')";
-			st.executeUpdate(sql2);
+			st.executeUpdate(result_sql);
 			StudentInfoSystem.display.append("=============================================================" + "\n");
 			StudentInfoSystem.display.append(" \t     학생 정보가 추가되었습니다.\n ");
 			StudentInfoSystem.display.append(" =============================================================" + "\n");
@@ -62,20 +58,17 @@ public class StudentInfoDB {
         }	
 	}
 	
-	
-	
-	public void delete() {
+	public void delete(String del_id) {
 
-		String id_del = StudentInfoSystem.input_id.getText().trim();
 		try {
-			String str = "select Id from student_info where Id LIKE '" + id_del + "' ";
-			rs = st.executeQuery(str);
+			check_sql = "select Id from student_info where Id LIKE '" + del_id + "' ";
+			rs = st.executeQuery(check_sql);
 
 			if (rs.next()) {
 
 				try {
-					String sql_del = "delete from student_info where Id= '" + id_del + "'";
-					st.executeUpdate(sql_del);
+					result_sql = "delete from student_info where Id= '" + del_id + "'";
+					st.executeUpdate(result_sql);
 					StudentInfoSystem.display
 							.append("=============================================================" + "\n");
 					StudentInfoSystem.display.append(" \t     학생 정보가 삭제되었습니다.\n ");
@@ -98,20 +91,17 @@ public class StudentInfoDB {
 		}
 	}
 
-	public void update() {
+	public void update(String update_id, String new_pnum) {
 
-		String id = StudentInfoSystem.input_id.getText().trim();
-
-		String str = "select Id from student_info where Id = '" + id + "' ";
+		check_sql = "select Id from student_info where Id = '" + update_id + "' ";
 		try {
-			rs = st.executeQuery(str);
+			rs = st.executeQuery(check_sql);
 
 			if (rs.next()) {
-				String new_pnum = StudentInfoSystem.input_pnum.getText().trim();
 
-				String sql2 = "update student_info set Phone_num = '" + new_pnum + "' where Id= '" + id + "'";
+				result_sql = "update student_info set Phone_num = '" + new_pnum + "' where Id= '" + update_id + "'";
 
-				st.executeUpdate(sql2);
+				st.executeUpdate(result_sql);
 
 				StudentInfoSystem.display
 						.append("=============================================================" + "\n");
@@ -132,17 +122,14 @@ public class StudentInfoDB {
 		}
 	}
 	
-	public void view(){
-		String search_id = StudentInfoSystem.input_id.getText().trim();	
-		
+	public void view(String search_id){	
 			try {
-				String search = " select * from student_info WHERE Id LIKE '"+search_id+"' ";
-				rs=st.executeQuery(search);
+				result_sql = " select * from student_info WHERE Id LIKE '"+search_id+"' ";
+				rs=st.executeQuery(result_sql);
 				
 				if(rs.next()) {
 					rs=st.getResultSet();
 					
-					//StudentInfoSystem.display.append("\t     [search result]\n");
 					rs.beforeFirst();
 					StudentInfoSystem.display.append("====================================================================" +"\n");
 					StudentInfoSystem.display.append("    Id \t Name \t  Department \t\t Phonenumber  \n");
