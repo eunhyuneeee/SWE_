@@ -14,8 +14,15 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	static JTextArea display;
 	static JTextField input_id, input_name, input_depart, input_pnum;
 	static JButton add, delete, update, view, okay;
-
+	
+	public final int NONE = 0;
+	public final int ADD = 1;
+	public final int UPDATE = 2;
+	public final int DELETE = 3;
+	public final int VIEW = 4;
+	
 	ResultSet rs = null;
+	String select;
 
 	public static void main(String[] args) {
 		StudentInfoSystem sis = new StudentInfoSystem();
@@ -81,33 +88,56 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 
 		StudentInfoDB db = new StudentInfoDB();
 		db.dataBase();
+		
+		InputSetting is = new InputSetting();
 		Component c = (Component) e.getSource();
-
-		if (c == add) {
+		
+		if(c == add){
 			display.setText("");
-			db.add();
-			clear();
+			is.setEditable(ADD);
+			select="add";
+		}
+			
+		else if (c == update) {	
+			display.setText("");
+			is.setEnable(UPDATE);
+			select="update";
 		}
 
-		else if (c == update) {
+		else if (c == delete) {	
 			display.setText("");
-			db.update();
-			clear();
-		}
-
-		if (c == delete) {
-			display.setText("");
-			db.delete();
-			clear();
+			is.setEnable(DELETE);	
+			select="delete";
 		}
 		
-		if (c == view) {
+		else if (c == view) {		
 			display.setText("");
-			db.view();
-			clear();
+			is.setEnable(VIEW);
+			select="view";
+		}
+			
+				
+		else if(c == okay) {
+			
+			if(select=="add"){
+				db.add();
+				clear();
+			}
+			else if(select=="update"){
+				db.update();
+				clear();
+			}
+			else if(select=="delete"){
+				db.delete();
+				clear();
+			}
+			else if(select=="view"){
+				db.view();
+				clear();
+			}
 		}
 	}
-
+	
 
 	public void clear() {
 		input_id.setText("");

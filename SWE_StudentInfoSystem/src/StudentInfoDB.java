@@ -141,9 +141,8 @@ public class StudentInfoDB {
 				
 				if(rs.next()) {
 					rs=st.getResultSet();
-					
-					//StudentInfoSystem.display.append("\t     [search result]\n");
 					rs.beforeFirst();
+					
 					StudentInfoSystem.display.append("====================================================================" +"\n");
 					StudentInfoSystem.display.append("    Id \t Name \t  Department \t\t Phonenumber  \n");
 					StudentInfoSystem.display.append("===================================================================="+"\n");

@@ -1,10 +1,10 @@
 public class InputSetting {
-	public final int ADD = 0;
-	public final int UPDATE = 1;
-	public final int DELETE = 2;
-	public final int VIEW = 3;
-	public final int NONE = 4;
-	int cmd;
+	public final int NONE = 0;
+	public final int ADD = 1;
+	public final int UPDATE = 2;
+	public final int DELETE = 3;
+	public final int VIEW = 4;
+	String select;
 	
 	public void setEditable(int n) {
 			StudentInfoSystem.input_id.setEditable(false);
@@ -45,24 +45,20 @@ public class InputSetting {
 			case ADD:
 				StudentInfoSystem.add.setEnabled(true);
 				setEditable(ADD);
-				cmd = ADD;
 				break;
 			
 			case UPDATE:
 				StudentInfoSystem.update.setEnabled(true);
 				setEditable(UPDATE);
-				cmd = UPDATE;
 				break;
 			
 			case DELETE:
 				setEditable(DELETE);
-				cmd = DELETE;
 				break;
 				
 			case VIEW:
 				StudentInfoSystem.view.setEnabled(true);
 				setEditable(VIEW);
-				cmd = VIEW;
 				break;
 			
 			case NONE:
