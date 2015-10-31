@@ -116,8 +116,7 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 			is.setEnable(VIEW);
 			select="view";
 		}
-			
-				
+						
 		else if(c == okay) {
 			
 			if(select=="add"){
