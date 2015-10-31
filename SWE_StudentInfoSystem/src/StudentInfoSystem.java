@@ -23,6 +23,7 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	
 	ResultSet rs = null;
 	String select;
+	String select2;
 
 	public static void main(String[] args) {
 		StudentInfoSystem sis = new StudentInfoSystem();
