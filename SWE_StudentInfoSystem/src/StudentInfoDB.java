@@ -2,6 +2,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.*;
+import javax.swing.JOptionPane;
 
 public class StudentInfoDB {
 
@@ -9,7 +10,8 @@ public class StudentInfoDB {
 	java.sql.Statement st = null;
 	ResultSet rs = null;
 	int r = 0;
-
+	
+	
 	public void dataBase() {
 		String jdbcDriver = "com.mysql.jdbc.Driver";
 		String dbUrl = "jdbc:mysql://" + StudentInfoSystem._host + ":" + StudentInfoSystem._port + "/"
@@ -36,11 +38,7 @@ public class StudentInfoDB {
 			rs = st.executeQuery(str);
 
 			if (rs.next()) {
-				StudentInfoSystem.display
-						.append("=============================================================" + "\n");
-				StudentInfoSystem.display.append(" \t   중복된 학번입니다. 다시 입력하세요.\n ");
-				StudentInfoSystem.display
-						.append(" =============================================================" + "\n");
+				JOptionPane.showMessageDialog(null,"중복된 학번입니다. 다시 입력하세요.","Add",JOptionPane.WARNING_MESSAGE);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -54,10 +52,9 @@ public class StudentInfoDB {
 			String sql2 = "insert into student_info values" + "('" + id + "','" + name + "','" + depart + "','" + pnum
 					+ "')";
 			st.executeUpdate(sql2);
-			StudentInfoSystem.display.append("=============================================================" + "\n");
-			StudentInfoSystem.display.append(" \t     학생 정보가 추가되었습니다.\n ");
-			StudentInfoSystem.display.append(" =============================================================" + "\n");
-        } catch (SQLException e) {
+			JOptionPane.showMessageDialog(null,"학생 정보가 추가되었습니다.","ADD",JOptionPane.PLAIN_MESSAGE);
+			all_view();
+       } catch (SQLException e) {
             e.printStackTrace();
         }	
 	}
@@ -72,26 +69,17 @@ public class StudentInfoDB {
 			rs = st.executeQuery(str);
 
 			if (rs.next()) {
-
 				try {
 					String sql_del = "delete from student_info where Id= '" + id_del + "'";
 					st.executeUpdate(sql_del);
-					StudentInfoSystem.display
-							.append("=============================================================" + "\n");
-					StudentInfoSystem.display.append(" \t     학생 정보가 삭제되었습니다.\n ");
-					StudentInfoSystem.display
-							.append(" =============================================================" + "\n");
-
+					JOptionPane.showMessageDialog(null,"학생 정보가 삭제되었습니다.","DELETE",JOptionPane.PLAIN_MESSAGE);
+					all_view();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 
 			} else {
-				StudentInfoSystem.display
-						.append("=============================================================" + "\n");
-				StudentInfoSystem.display.append(" \t     삭제실패. 일치하는 학생 정보가 없습니다.\n ");
-				StudentInfoSystem.display
-						.append(" =============================================================" + "\n");
+				JOptionPane.showMessageDialog(null,"삭제실패. 일치하는 학생 정보가 없습니다.","DELETE",JOptionPane.WARNING_MESSAGE);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -112,18 +100,10 @@ public class StudentInfoDB {
 				String sql2 = "update student_info set Phone_num = '" + new_pnum + "' where Id= '" + id + "'";
 
 				st.executeUpdate(sql2);
-
-				StudentInfoSystem.display
-						.append("=============================================================" + "\n");
-				StudentInfoSystem.display.append(" \t     학생 정보가 변경되었습니다.\n ");
-				StudentInfoSystem.display
-						.append(" =============================================================" + "\n");
+				JOptionPane.showMessageDialog(null,"학생 정보가 변경되었습니다.","UPDATE",JOptionPane.PLAIN_MESSAGE);
+				all_view();
 			} else {
-				StudentInfoSystem.display
-						.append("=============================================================" + "\n");
-				StudentInfoSystem.display.append(" \t   학생정보록에 해당 학번이 없습니다.\n ");
-				StudentInfoSystem.display
-						.append(" =============================================================" + "\n");
+				JOptionPane.showMessageDialog(null,"학생정보록에 해당 학번이 없습니다.","UPDATE",JOptionPane.WARNING_MESSAGE);
 			}
 
 		} catch (SQLException e) {
@@ -141,9 +121,9 @@ public class StudentInfoDB {
 				
 				if(rs.next()) {
 					rs=st.getResultSet();
-					
-					//StudentInfoSystem.display.append("\t     [search result]\n");
 					rs.beforeFirst();
+					JOptionPane.showMessageDialog(null,"학생 정보가 검색되었습니다.","VIEW",JOptionPane.PLAIN_MESSAGE);
+
 					StudentInfoSystem.display.append("====================================================================" +"\n");
 					StudentInfoSystem.display.append("    Id \t Name \t  Department \t\t Phonenumber  \n");
 					StudentInfoSystem.display.append("===================================================================="+"\n");
@@ -160,7 +140,7 @@ public class StudentInfoDB {
 					}
 				} 
 				else
-					StudentInfoSystem.display.append("해당학번이 없습니다. 다시 입력하세요.");
+					JOptionPane.showMessageDialog(null,"해당 학번이 없습니다. 다시 입력하세요.","VIEW",JOptionPane.WARNING_MESSAGE);
 					
 			} catch(Exception e) {
 				System.out.println("Data가 없습니다.");
@@ -168,7 +148,7 @@ public class StudentInfoDB {
 	
 			}
 	}
-	
+
 	public void all_view(){
 		
 		try {
@@ -202,4 +182,5 @@ public class StudentInfoDB {
 			return;
 		}
 	}
+
 }

@@ -13,9 +13,17 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 
 	static JTextArea display;
 	static JTextField input_id, input_name, input_depart, input_pnum;
-	static JButton add, delete, update, view, all;
+	static JButton add, delete, update, view, okay;
+	
+	public final int NONE = 0;
+	public final int ADD = 1;
+	public final int UPDATE = 2;
+	public final int DELETE = 3;
+	public final int VIEW = 4;
 
 	ResultSet rs = null;
+	String select;
+	String select2;
 
 	public static void main(String[] args) {
 		StudentInfoSystem sis = new StudentInfoSystem();
@@ -36,13 +44,13 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		JPanel top = new JPanel();
 		top.add(new JLabel("<STUDENT INFORMATION BOOK>"));
 		getContentPane().add("North", top);
-
+		makeButton();
+		
 		display = new JTextArea();
 		display.setEditable(true);
 		getContentPane().add("Center", new JScrollPane(display));
-
-		JPanel left = new JPanel(new GridLayout(7, 2));
-		left.setPreferredSize(new Dimension(200, 400));
+		
+		JPanel left = new JPanel(new GridLayout(8, 2));
 		left.add(new JLabel("   학      번"));
 		left.add(input_id = new JTextField(30));
 		left.add(new JLabel("   이      름"));
@@ -51,67 +59,87 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		left.add(input_depart = new JTextField(30));
 		left.add(new JLabel("   핸드폰번호"));
 		left.add(input_pnum = new JTextField(30));
+		left.setPreferredSize(new Dimension(150, 400));
 		getContentPane().add("West", left);
-
+		
 		makeButton();
 	}
 
 	private void makeButton() {
-		JPanel button = new JPanel();
-		button.add(add = new JButton("ADD"));
-		add.addActionListener(this);
-
-		button.add(delete = new JButton("DELETE"));
-		delete.addActionListener(this);
-
-		button.add(update = new JButton("UPDATE"));
-		update.addActionListener(this);
-
-		button.add(view = new JButton("VIEW"));
-		view.addActionListener(this);
 		
-		button.add(all = new JButton("All"));
-		all.addActionListener(this);
-
-		getContentPane().add("South", button);
+		JPanel right = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 30));
+		right.add(add = new JButton("추         가"));
+		add.addActionListener(this);
+		right.add(update = new JButton("업데이트"));
+		update.addActionListener(this);
+		right.add(delete = new JButton("삭         제"));
+		delete.addActionListener(this);
+		right.add(view = new JButton("검         색"));
+		view.addActionListener(this);
+		right.setPreferredSize(new Dimension(100, 400));
+		getContentPane().add("East", right);
+		
+		JPanel bottom = new JPanel();
+		bottom.add(okay = new JButton("확     인"));
+		okay.addActionListener(this);
+		getContentPane().add("South", bottom);	
 	}
 
 	public void actionPerformed(ActionEvent e) {
 
 		StudentInfoDB db = new StudentInfoDB();
 		db.dataBase();
+		
+		InputSetting is = new InputSetting();
 		Component c = (Component) e.getSource();
-
-		if (c == add) {
+		
+		if(c == add){
 			display.setText("");
-			db.add();
-			clear();
+			is.setEditable(ADD);
+			select="add";
+		}
+			
+		else if (c == update) {	
+			display.setText("");
+			is.setEnable(UPDATE);
+			select="update";
 		}
 
-		else if (c == update) {
+		else if (c == delete) {	
 			display.setText("");
-			db.update();
-			clear();
-		}
-
-		if (c == delete) {
-			display.setText("");
-			db.delete();
-			clear();
+			is.setEnable(DELETE);	
+			select="delete";
 		}
 		
-		if (c == view) {
+		else if (c == view) {		
 			display.setText("");
-			db.view();
-			clear();
+			is.setEnable(VIEW);
+			select="view";
 		}
-		if (c == all){
-			display.setText("");
-			db.all_view();
-			clear();
-		}
+						
+		else if(c == okay) {
+			
+			if(select=="add"){
+				db.add();
+				clear();
+			}
+			else if(select=="update"){
+				db.update();
+				clear();
+			}
+			else if(select=="delete"){
+				db.delete();
+				clear();
+			}
+			else if(select=="view"){
+				db.view();
+				clear();
+			}
+		}	
 	}
-
+			
+	
+	
 
 	public void clear() {
 		input_id.setText("");
