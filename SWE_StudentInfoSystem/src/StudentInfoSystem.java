@@ -8,8 +8,8 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	static String _host = "localhost";
 	static String _port = "3306";
 	static String _user = "root";
-	static String _password = "1115088";
-	static String _database = "smu";
+	static String _password = "0070";
+	static String _database = "student_info";
 
 	static JTextArea display;
 	static JTextField input_id, input_name, input_depart, input_pnum;
