@@ -160,31 +160,31 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	}
 	
 	public void setEditable(int n) {
-		StudentInfoSystem.input_id.setEditable(false);
-		StudentInfoSystem.input_name.setEditable(false);
-		StudentInfoSystem.input_depart.setEditable(false);
-		StudentInfoSystem.input_pnum.setEditable(false);
+		input_id.setEditable(false);
+		input_name.setEditable(false);
+		input_depart.setEditable(false);
+		input_pnum.setEditable(false);
 
 		switch (n) {
 
 		case ADD:
-			StudentInfoSystem.input_id.setEditable(true);
-			StudentInfoSystem.input_name.setEditable(true);
-			StudentInfoSystem.input_depart.setEditable(true);
-			StudentInfoSystem.input_pnum.setEditable(true);
+			input_id.setEditable(true);
+			input_name.setEditable(true);
+			input_depart.setEditable(true);
+			input_pnum.setEditable(true);
 			break;
 
 		case UPDATE:
-			StudentInfoSystem.input_id.setEditable(true);
-			StudentInfoSystem.input_pnum.setEditable(true);
+			input_id.setEditable(true);
+			input_pnum.setEditable(true);
 			break;
 
 		case DELETE:
-			StudentInfoSystem.input_id.setEditable(true);
+			input_id.setEditable(true);
 			break;
 
 		case VIEW:
-			StudentInfoSystem.input_id.setEditable(true);
+			input_id.setEditable(true);
 			break;
 		}
 	}
