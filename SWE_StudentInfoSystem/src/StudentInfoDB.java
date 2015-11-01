@@ -29,24 +29,36 @@ public class StudentInfoDB {
 		}
 	}
 
-	public void add(String add_id, String name, String depart, String pnum) {
+	public boolean add(String add_id, String name, String depart, String pnum) {
 
 		try {
 			check_sql = "select Id from student_info where Id LIKE '" + add_id + "' ";
 			rs = st.executeQuery(check_sql);
 
 			if (rs.next()) {
-				StudentInfoSystem.display
+				
+			
+				return false;
+			/*	StudentInfoSystem.display
 						.append("=============================================================" + "\n");
 				StudentInfoSystem.display.append(" \t   중복된 학번입니다. 다시 입력하세요.\n ");
 				StudentInfoSystem.display
 						.append(" =============================================================" + "\n");
+						*/
 			}
+			else {
+				result_sql = "insert into student_info values" + "('" + add_id + "','" + name + "','" + depart + "','" + pnum
+						+ "')";
+				st.executeUpdate(result_sql);
+	
+							}
+				
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return true;
 		
-		try {
+	/*	try {
 			result_sql = "insert into student_info values" + "('" + add_id + "','" + name + "','" + depart + "','" + pnum
 					+ "')";
 			st.executeUpdate(result_sql);
@@ -55,7 +67,7 @@ public class StudentInfoDB {
 			StudentInfoSystem.display.append(" =============================================================" + "\n");
         } catch (SQLException e) {
             e.printStackTrace();
-        }	
+        }*/	
 	}
 	
 	public void delete(String del_id) {
@@ -69,15 +81,13 @@ public class StudentInfoDB {
 				try {
 					result_sql = "delete from student_info where Id= '" + del_id + "'";
 					st.executeUpdate(result_sql);
-					StudentInfoSystem.display
-							.append("=============================================================" + "\n");
 					StudentInfoSystem.display.append(" \t     학생 정보가 삭제되었습니다.\n ");
-					StudentInfoSystem.display
-							.append(" =============================================================" + "\n");
+					all_view();
 
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+				//return true;
 
 			} else {
 				StudentInfoSystem.display
@@ -154,5 +164,39 @@ public class StudentInfoDB {
 				return;
 	
 			}
+	}
+	
+	public void all_view(){
+		
+		try {
+			result_sql = " select * from student_info ";
+			rs=st.executeQuery(result_sql);
+			
+			if(rs.next()) {
+				rs=st.getResultSet();
+				
+				rs.beforeFirst();
+				StudentInfoSystem.display.append("====================================================================" +"\n");
+				StudentInfoSystem.display.append("    Id \t Name \t  Department \t\t Phonenumber  \n");
+				StudentInfoSystem.display.append("===================================================================="+"\n");
+				
+				while(rs.next()) {						
+					
+					String s_id = rs.getString(1);
+					String s_name = rs.getString(2);
+					String s_depart = rs.getString(3);
+					String s_pnum = rs.getString(4);
+					
+					StudentInfoSystem.display.append(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
+					System.out.println(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
+				}
+			} 
+			else
+				StudentInfoSystem.display.append("Data가 없습니다.");
+				
+		} catch(Exception e) {
+			// TODO Auto-generated catch block			
+			return;
+		}
 	}
 }

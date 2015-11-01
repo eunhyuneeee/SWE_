@@ -86,9 +86,17 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 
 		if (c == add) {
 			display.setText("");
-			db.add(id, name, depart, pnum);
+			boolean result = db.add(id, name, depart, pnum);
+			if(result){
+				display.append(" \t     학생 정보가 추가되었습니다.\n ");
+				db.all_view();
+			}
+			else{
+				display.append(" \t   중복된 학번입니다. 다시 입력하세요.\n ");
+			}
 			clear();
 		}
+		
 
 		else if (c == update) {
 			display.setText("");
