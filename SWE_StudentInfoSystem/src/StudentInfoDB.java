@@ -2,7 +2,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.*;
-import javax.swing.JOptionPane;
 
 public class StudentInfoDB {
 
@@ -10,8 +9,8 @@ public class StudentInfoDB {
 	java.sql.Statement st = null;
 	ResultSet rs = null;
 	int r = 0;
-	
-	
+	String check_sql, result_sql = null;
+
 	public void dataBase() {
 		String jdbcDriver = "com.mysql.jdbc.Driver";
 		String dbUrl = "jdbc:mysql://" + StudentInfoSystem._host + ":" + StudentInfoSystem._port + "/"
@@ -30,157 +29,97 @@ public class StudentInfoDB {
 		}
 	}
 
-	public void add() {
+	public boolean add(String add_id, String name, String depart, String pnum) {
 
-		String id = StudentInfoSystem.input_id.getText().trim();
 		try {
-			String str = "select Id from student_info where Id LIKE '" + id + "' ";
-			rs = st.executeQuery(str);
+			check_sql = "select Id from student_info where Id LIKE '" + add_id + "' ";
+			rs = st.executeQuery(check_sql);
+
+			if (rs.next()) return false;
+			else {
+				result_sql = "insert into student_info values" + "('" + add_id + "','" + name + "','" + depart + "','"
+						+ pnum + "')";
+				st.executeUpdate(result_sql);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();		
+		}
+		return true;
+	}
+
+	public boolean update(String update_id, String new_pnum) {
+
+		try {
+			check_sql = "select Id from student_info where Id = '" + update_id + "' ";
+			rs = st.executeQuery(check_sql);
 
 			if (rs.next()) {
-				JOptionPane.showMessageDialog(null,"중복된 학번입니다. 다시 입력하세요.","Add",JOptionPane.WARNING_MESSAGE);
-			}
+				result_sql = "update student_info set Phone_num = '" + new_pnum + "' where Id= '" + update_id + "'";
+				st.executeUpdate(result_sql);
+			} else  return false;
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		String name = StudentInfoSystem.input_name.getText().trim();
-		String depart = StudentInfoSystem.input_depart.getText().trim();
-		String pnum = StudentInfoSystem.input_pnum.getText().trim();
-		
-		try {
-			String sql2 = "insert into student_info values" + "('" + id + "','" + name + "','" + depart + "','" + pnum
-					+ "')";
-			st.executeUpdate(sql2);
-			JOptionPane.showMessageDialog(null,"학생 정보가 추가되었습니다.","ADD",JOptionPane.PLAIN_MESSAGE);
-			all_view();
-       } catch (SQLException e) {
-            e.printStackTrace();
-        }	
+		return true;
 	}
-	
-	
-	
-	public void delete() {
 
-		String id_del = StudentInfoSystem.input_id.getText().trim();
+	public boolean delete(String del_id) {
+
 		try {
-			String str = "select Id from student_info where Id LIKE '" + id_del + "' ";
-			rs = st.executeQuery(str);
+			check_sql = "select Id from student_info where Id LIKE '" + del_id + "' ";
+			rs = st.executeQuery(check_sql);
 
 			if (rs.next()) {
-				try {
-					String sql_del = "delete from student_info where Id= '" + id_del + "'";
-					st.executeUpdate(sql_del);
-					JOptionPane.showMessageDialog(null,"학생 정보가 삭제되었습니다.","DELETE",JOptionPane.PLAIN_MESSAGE);
-					all_view();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
 
-			} else {
-				JOptionPane.showMessageDialog(null,"삭제실패. 일치하는 학생 정보가 없습니다.","DELETE",JOptionPane.WARNING_MESSAGE);
-			}
+				result_sql = "delete from student_info where Id= '" + del_id + "'";
+				st.executeUpdate(result_sql);
+
+			} else  return false;
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 
-	public void update() {
+	public boolean view(String search_id, String caseValue) {
 
-		String id = StudentInfoSystem.input_id.getText().trim();
-
-		String str = "select Id from student_info where Id = '" + id + "' ";
 		try {
-			rs = st.executeQuery(str);
+			if (caseValue == "search")
+				result_sql = " select * from student_info WHERE Id LIKE '" + search_id + "' ";
+			else if (caseValue == "ALL")
+				result_sql = "select * from student_info ";
+
+			rs = st.executeQuery(result_sql);
 
 			if (rs.next()) {
-				String new_pnum = StudentInfoSystem.input_pnum.getText().trim();
+				rs = st.getResultSet();
 
-				String sql2 = "update student_info set Phone_num = '" + new_pnum + "' where Id= '" + id + "'";
-
-				st.executeUpdate(sql2);
-				JOptionPane.showMessageDialog(null,"학생 정보가 변경되었습니다.","UPDATE",JOptionPane.PLAIN_MESSAGE);
-				all_view();
-			} else {
-				JOptionPane.showMessageDialog(null,"학생정보록에 해당 학번이 없습니다.","UPDATE",JOptionPane.WARNING_MESSAGE);
-			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void view(){
-		String search_id = StudentInfoSystem.input_id.getText().trim();	
-		
-			try {
-				String search = " select * from student_info WHERE Id LIKE '"+search_id+"' ";
-				rs=st.executeQuery(search);
-				
-				if(rs.next()) {
-					rs=st.getResultSet();
-					rs.beforeFirst();
-					JOptionPane.showMessageDialog(null,"학생 정보가 검색되었습니다.","VIEW",JOptionPane.PLAIN_MESSAGE);
-
-					StudentInfoSystem.display.append("====================================================================" +"\n");
-					StudentInfoSystem.display.append("    Id \t Name \t  Department \t\t Phonenumber  \n");
-					StudentInfoSystem.display.append("===================================================================="+"\n");
-					
-					while(rs.next()) {						
-						
-						String s_id = rs.getString(1);
-						String s_name = rs.getString(2);
-						String s_depart = rs.getString(3);
-						String s_pnum = rs.getString(4);
-						
-						StudentInfoSystem.display.append(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
-						System.out.println(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
-					}
-				} 
-				else
-					JOptionPane.showMessageDialog(null,"해당 학번이 없습니다. 다시 입력하세요.","VIEW",JOptionPane.WARNING_MESSAGE);
-					
-			} catch(Exception e) {
-				System.out.println("Data가 없습니다.");
-				return;
-	
-			}
-	}
-
-	public void all_view(){
-		
-		try {
-			String all = " select * from student_info ";
-			rs=st.executeQuery(all);
-			
-			if(rs.next()) {
-				rs=st.getResultSet();
-				
 				rs.beforeFirst();
-				StudentInfoSystem.display.append("====================================================================" +"\n");
-				StudentInfoSystem.display.append("    Id \t Name \t  Department \t\t Phonenumber  \n");
-				StudentInfoSystem.display.append("===================================================================="+"\n");
-				
-				while(rs.next()) {						
-					
-					String s_id = rs.getString(1);
-					String s_name = rs.getString(2);
-					String s_depart = rs.getString(3);
-					String s_pnum = rs.getString(4);
-					
-					StudentInfoSystem.display.append(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
-					System.out.println(s_id+ "\t" +s_name+ "\t" +s_depart+  "\t\t" +s_pnum+"\n");
-				}
-			} 
-			else
-				StudentInfoSystem.display.append("Data가 없습니다.");
-				
-		} catch(Exception e) {
-			// TODO Auto-generated catch block			
-			return;
-		}
-	}
 
+				StudentInfoSystem.display.setText("");
+				StudentInfoSystem.display
+						.append("  ============================================================" + "\n");
+				StudentInfoSystem.display.append("       학번 \t이름 \t  학과 \t       핸드폰번호  \n");
+				StudentInfoSystem.display
+						.append("  ============================================================" + "\n");
+
+				while (rs.next()) {
+
+					String viewId = rs.getString(1);
+					String viewName = rs.getString(2);
+					String viewDepart = rs.getString(3);
+					String viewPnum = rs.getString(4);
+
+					StudentInfoSystem.display
+							.append("  "+viewId + "\t" + viewName + "\t"+ viewDepart + "\t      " + viewPnum + "\n");
+				}
+			} else return false;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 }
