@@ -8,7 +8,7 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	static String _host = "localhost";
 	static String _port = "3306";
 	static String _user = "root";
-	static String _password = "1115088";
+	static String _password = "1234";
 	static String _database = "smu";
 
 	static JTextArea display;
@@ -23,7 +23,6 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 
 	ResultSet rs = null;
 	String select;
-	String select2;
 
 	public static void main(String[] args) {
 		StudentInfoSystem sis = new StudentInfoSystem();
@@ -118,28 +117,31 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		}
 						
 		else if(c == okay) {
+			switch(select) {
 			
-			if(select=="add"){
+			case "add":
 				db.add();
 				clear();
-			}
-			else if(select=="update"){
+				break;
+				
+			case "update":
 				db.update();
 				clear();
-			}
-			else if(select=="delete"){
+				break;
+				
+			case "delete" :
 				db.delete();
 				clear();
-			}
-			else if(select=="view"){
+				break;
+				
+			case "view" :
 				db.view();
 				clear();
+				break;
+				
 			}
 		}	
 	}
-			
-	
-	
 
 	public void clear() {
 		input_id.setText("");
