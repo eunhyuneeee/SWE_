@@ -103,15 +103,15 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 			select="add";
 		}	
 		else if (c == update) {	
-			is.setEnable(UPDATE);
+			is.setEditable(UPDATE);
 			select="update";
 		}
 		else if (c == delete) {	
-			is.setEnable(DELETE);	
+			is.setEditable(DELETE);	
 			select="delete";
 		}	
 		else if (c == view) {		
-			is.setEnable(VIEW);
+			is.setEditable(VIEW);
 			select="view";
 		}
 		

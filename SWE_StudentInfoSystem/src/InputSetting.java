@@ -36,34 +36,4 @@ public class InputSetting {
 		}
 	}
 
-	public void setEnable(int n) {
-
-		switch (n) {
-
-		case ADD:
-			StudentInfoSystem.add.setEnabled(true);
-			setEditable(ADD);
-			break;
-
-		case UPDATE:
-			StudentInfoSystem.update.setEnabled(true);
-			setEditable(UPDATE);
-			break;
-
-		case DELETE:
-			setEditable(DELETE);
-			break;
-
-		case VIEW:
-			StudentInfoSystem.view.setEnabled(true);
-			setEditable(VIEW);
-			break;
-
-		case NONE:
-			StudentInfoSystem.add.setEnabled(true);
-			StudentInfoSystem.update.setEnabled(true);
-			StudentInfoSystem.delete.setEnabled(true);
-			StudentInfoSystem.view.setEnabled(true);
-		}
-	}
 }
