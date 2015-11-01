@@ -32,10 +32,8 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 	}
 
 	private void MainMenu() {
-
 		init();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 	}
 
 	private void init() {
@@ -61,11 +59,14 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		left.setPreferredSize(new Dimension(150, 400));
 		getContentPane().add("West", left);
 		
+		InputSetting is1 = new InputSetting();
+		is1.setEditable(NONE);
+		
 		makeButton();
 	}
 
 	private void makeButton() {
-		
+
 		JPanel right = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 30));
 		right.add(add = new JButton("추         가"));
 		add.addActionListener(this);
@@ -82,10 +83,15 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		bottom.add(okay = new JButton("확     인"));
 		okay.addActionListener(this);
 		getContentPane().add("South", bottom);	
+		
 	}
 
 	public void actionPerformed(ActionEvent e) {
-
+		String id = input_id.getText().trim();
+		String name = input_name.getText().trim();
+		String depart = input_depart.getText().trim();
+		String pnum = input_pnum.getText().trim();
+		
 		StudentInfoDB db = new StudentInfoDB();
 		db.dataBase();
 		
@@ -93,52 +99,69 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		Component c = (Component) e.getSource();
 		
 		if(c == add){
-			display.setText("");
 			is.setEditable(ADD);
 			select="add";
-		}
-			
+		}	
 		else if (c == update) {	
-			display.setText("");
 			is.setEnable(UPDATE);
 			select="update";
 		}
-
 		else if (c == delete) {	
-			display.setText("");
 			is.setEnable(DELETE);	
 			select="delete";
-		}
-		
+		}	
 		else if (c == view) {		
-			display.setText("");
 			is.setEnable(VIEW);
 			select="view";
 		}
-						
+		
 		else if(c == okay) {
+			boolean result;
+			
 			switch(select) {
 			
 			case "add":
-				db.add();
+				result = db.add(id, name, depart, pnum);
+				if(result){
+					JOptionPane.showMessageDialog(null, "학생 정보가 추가되었습니다.", "성 공", JOptionPane.PLAIN_MESSAGE);
+					db.view(id, "ALL");
+				}else
+					JOptionPane.showMessageDialog(null,"중복된 학번입니다. 다시 입력하세요.","오 류",JOptionPane.WARNING_MESSAGE);		
+
 				clear();
 				break;
 				
 			case "update":
-				db.update();
+				result = db.update(id, pnum);
+				if(result){
+					JOptionPane.showMessageDialog(null, "학생 정보가 변경되었습니다.", "성 공", JOptionPane.PLAIN_MESSAGE);
+					db.view(id, "ALL");			
+				}else
+					JOptionPane.showMessageDialog(null, "학생정보록에 해당 학번이 없습니다.", "오 류 ", JOptionPane.WARNING_MESSAGE);
+				
 				clear();
 				break;
 				
 			case "delete" :
-				db.delete();
+				result = db.delete(id);
+				if(result){
+					JOptionPane.showMessageDialog(null, "학생 정보가 삭제되었습니다.", "성 공", JOptionPane.PLAIN_MESSAGE);
+					db.view(id, "ALL");	
+				}else
+					JOptionPane.showMessageDialog(null, "삭제실패. 일치하는 학생 정보가 없습니다.", "오 류", JOptionPane.WARNING_MESSAGE);
+				
 				clear();
 				break;
 				
 			case "view" :
-				db.view();
-				clear();
-				break;
+				result = db.view(id,"search");
+				if(result){
+					JOptionPane.showMessageDialog(null, "학생 정보가 검색되었습니다.", "성 공 ", JOptionPane.PLAIN_MESSAGE);
+				}else
+					JOptionPane.showMessageDialog(null, "해당 학번이 없습니다. 다시 입력하세요.", "VIEW", JOptionPane.WARNING_MESSAGE);
 				
+				clear();
+				break;	
 			}
 		}	
 	}
@@ -149,19 +172,4 @@ public class StudentInfoSystem extends JFrame implements ActionListener {
 		input_depart.setText("");
 		input_pnum.setText("");
 	}
-
-	public static Connection makeConnection() {
-		String url = "jdbc:mysql://" + _host + ":" + _port + "/" + _database;
-		Connection con = null;
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection(url, _user, _password);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return con;
-	}
-
 }
