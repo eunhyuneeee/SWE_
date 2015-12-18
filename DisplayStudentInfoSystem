@@ -1,0 +1,236 @@
+import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class DisplayOfStudentInfoSystem extends JFrame implements ActionListener {
+
+	static final int frameWidth = 700;
+	static final int frameHeight = 400;
+	static final int numberOfRows = 8;
+	static final int numberOfColumns = 2;
+	static final int jTextFieldWidthSize = 30;
+	static final int widthSize = 150;
+	static final int heightSize = 400;
+	static final int horizontalGapSize = 20;
+	static final int verticalGapSize = 30;
+	static JTextArea displayField;
+	static JTextField idField, nameField, departmentField, phoneNumberField;
+	static JButton addButton, deleteButton, updateButton, viewButton, okayButton;
+	public final int ADD = 1;
+	public final int UPDATE = 2;
+	public final int DELETE = 3;
+	public final int VIEW = 4;
+	String inputId, inputName, inputDepartment, inputPhonenumber;
+	boolean queryResult;
+	int selectedButton;
+	Statement SQLStatement;
+	StudentInfoManagerWithDatabase infoManagerWithDatabase;
+
+	public DisplayOfStudentInfoSystem(Statement SQLStatement) {
+		this.SQLStatement = SQLStatement;
+		infoManagerWithDatabase = new StudentInfoManagerWithDatabase(SQLStatement);
+	}
+
+	void setStudentInformationSystemJFrame() {
+		makeInputPart();
+		makeButtons();
+		makeResultDisplay();
+		setTitleName();
+		setSize(frameWidth, frameHeight);
+		setVisible(true);
+		initializeTextFieldEditable();
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	private void makeInputPart() {
+		JPanel inputPart = new JPanel(new GridLayout(numberOfRows, numberOfColumns));
+		inputPart.add(new JLabel("   학      번"));
+		inputPart.add(idField = new JTextField(jTextFieldWidthSize));
+		inputPart.add(new JLabel("   이      름"));
+		inputPart.add(nameField = new JTextField(jTextFieldWidthSize));
+		inputPart.add(new JLabel("   학      과"));
+		inputPart.add(departmentField = new JTextField(jTextFieldWidthSize));
+		inputPart.add(new JLabel("   핸드폰번호"));
+		inputPart.add(phoneNumberField = new JTextField(jTextFieldWidthSize));
+		inputPart.setPreferredSize(new Dimension(widthSize, heightSize));
+		getContentPane().add("West", inputPart);
+	}
+
+	private void makeResultDisplay() {
+		displayField = new JTextArea();
+		displayField.setEditable(true);
+		getContentPane().add("Center", new JScrollPane(displayField));
+	}
+
+	private void setTitleName() {
+		JPanel programTitle = new JPanel();
+		programTitle.add(new JLabel("<STUDENT INFORMATION BOOK>"));
+		getContentPane().add("North", programTitle);
+	}
+
+	private void makeButtons() {
+		makeFourFeatureButtons();
+		makeOkayButton();
+	}
+
+	private void makeFourFeatureButtons() {
+		JPanel buttonPart = new JPanel(new FlowLayout(FlowLayout.CENTER, horizontalGapSize, verticalGapSize));
+		buttonPart.add(addButton = new JButton("추         가"));
+		addButton.addActionListener(this);
+		buttonPart.add(updateButton = new JButton("업데이트"));
+		updateButton.addActionListener(this);
+		buttonPart.add(deleteButton = new JButton("삭         제"));
+		deleteButton.addActionListener(this);
+		buttonPart.add(viewButton = new JButton("검         색"));
+		viewButton.addActionListener(this);
+		buttonPart.setPreferredSize(new Dimension(widthSize, heightSize));
+		getContentPane().add("East", buttonPart);
+	}
+
+	private void makeOkayButton() {
+		JPanel bottomPart = new JPanel();
+		bottomPart.add(okayButton = new JButton("확     인"));
+		okayButton.setEnabled(false);
+		okayButton.addActionListener(this);
+		getContentPane().add("South", bottomPart);
+	}
+
+	private void getDataFromTextField() {
+		inputId = idField.getText().trim();
+		inputName = nameField.getText().trim();
+		inputDepartment = departmentField.getText().trim();
+		inputPhonenumber = phoneNumberField.getText().trim();
+	}
+
+	public void actionPerformed(ActionEvent buttonClickEvent) {
+		getDataFromTextField();
+		Component componentOfButtons = (Component) buttonClickEvent.getSource();
+		setByButton(componentOfButtons);
+	}
+
+	private void setByButton(Component componentOfButtons) {
+		if (componentOfButtons == addButton) {
+			placeRestrictionsByButton(ADD);
+		}
+		if (componentOfButtons == updateButton) {
+			placeRestrictionsByButton(UPDATE);
+		}
+		if (componentOfButtons == deleteButton) {
+			placeRestrictionsByButton(DELETE);
+		}
+		if (componentOfButtons == viewButton) {
+			placeRestrictionsByButton(VIEW);
+		}
+		if (componentOfButtons == okayButton) {
+			checkSelectedButtonType(selectedButton);
+		}
+	}
+
+	private void placeRestrictionsByButton(int selectedButton) {
+		this.selectedButton = selectedButton;
+		setEditable(selectedButton);
+		okayButton.setEnabled(true);
+		clearAllTextField();
+	}
+
+	public void clearAllTextField() {
+		idField.setText("");
+		nameField.setText("");
+		departmentField.setText("");
+		phoneNumberField.setText("");
+	}
+
+	public void setEditable(int n) {
+		initializeTextFieldEditable();
+		switch (n) {
+		case ADD:
+			setAddFieldEditable();
+			break;
+		case UPDATE:
+			setUpdateFieldEditable();
+			break;
+		case DELETE:
+			setDeleteAndViewFieldEditable();
+			break;
+		case VIEW:
+			setDeleteAndViewFieldEditable();
+			break;
+		}
+	}
+
+	public void initializeTextFieldEditable() {
+		idField.setEditable(false);
+		nameField.setEditable(false);
+		departmentField.setEditable(false);
+		phoneNumberField.setEditable(false);
+	}
+
+	public void setAddFieldEditable() {
+		idField.setEditable(true);
+		nameField.setEditable(true);
+		departmentField.setEditable(true);
+		phoneNumberField.setEditable(true);
+	}
+
+	public void setUpdateFieldEditable() {
+		idField.setEditable(true);
+		phoneNumberField.setEditable(true);
+	}
+
+	public void setDeleteAndViewFieldEditable() {
+		idField.setEditable(true);
+	}
+
+	private void checkSelectedButtonType(int selectedButton) {
+		switch (selectedButton) {
+		case ADD:
+			queryResult = infoManagerWithDatabase.addStudentInfoToDatabase(inputId, inputName, inputDepartment,
+					inputPhonenumber);
+			showResult("학생정보가 추가되었습니다.", "중복된 학번입니다. 다시 입력하세요.");
+			break;
+		case UPDATE:
+			queryResult = infoManagerWithDatabase.updateStudentInfoOnDatabase(inputId, inputPhonenumber);
+			showResult("학생 정보가 변경되었습니다.", "학생정보록에 해당 학번이 없습니다.");
+			break;
+		case DELETE:
+			queryResult = infoManagerWithDatabase.deleteStudentInfoOnDatabase(inputId);
+			showResult("학생 정보가 삭제되었습니다.", "삭제 실패. 일치하는 학생 정보가 없습니다.");
+			break;
+		case VIEW:
+			queryResult = infoManagerWithDatabase.searchStudentInfoFromDatabase(inputId);
+			showResult("학생 정보가 검색되었습니다.", "해당 학번이 없습니다. 다시 입력하세요.");
+			break;
+		}
+	}
+
+	private void showResult(String successMessage, String failMessage) {
+		if (queryResult) {
+			showSuccessMessage(successMessage);
+			showCurrentDatabase(selectedButton);
+		} else {
+			showFailMessage(failMessage);
+		}
+	}
+
+	private void showSuccessMessage(String successMessage) {
+		JOptionPane.showMessageDialog(null, successMessage, "성 공", JOptionPane.PLAIN_MESSAGE);
+	}
+
+	private void showFailMessage(String failMessage) {
+		JOptionPane.showMessageDialog(null, failMessage, "오 류", JOptionPane.WARNING_MESSAGE);
+	}
+
+	private void showCurrentDatabase(int selectedButton) {
+		if (isViewButtonSelected())
+			infoManagerWithDatabase.showAllStudentInfoFromDatabase();
+	}
+
+	private boolean isViewButtonSelected() {
+		if (selectedButton == VIEW) {
+			return false;
+		}
+		return true;
+	}
+}
