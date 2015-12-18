@@ -1,0 +1,193 @@
+import javax.swing.*;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Statement;
+
+public class DisplayOfLogin extends JFrame implements ActionListener {
+	
+	static final int frameWidth = 700;
+	static final int frameHeight = 400;
+	static final int numberOfRows = 4;
+	static final int numberOfColumn = 1;
+	static final int horizontalGapSize = 20;
+	static final int verticalGapSize = 70;
+	JRadioButton guestButton, professorButton;
+	JPanel topPanel, inputIdPanel, inputPasswordPanel, buttonClickPanel;
+	JTextField passwordTextField;
+	JButton loginButton, passwordUpdateButton;
+	DisplayOfStudentInfoSystem displayOfInfoSystemAfterLogin;
+	DatabaseConnection databaseConnection;
+	static Component ComponentOfSelectedButton;
+	String currentPassword;
+	boolean isGuest, isProfessor, isLogin, isPasswordUpdate;
+	LoginManagerWtihDatabase LoginManager;
+
+	public static void main(String[] args) {
+		DisplayOfLogin DisplayOfLogin = new DisplayOfLogin(); 
+		DisplayOfLogin.setLoginJFrame();
+	}
+
+	public void setLoginJFrame() {
+		setTitle("학생정보기록부 로그인");
+		setSize(frameWidth, frameHeight);
+		setLayout(new GridLayout(numberOfRows, numberOfColumn, horizontalGapSize, verticalGapSize));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		panelInitialize();
+		setVisible(true);
+	}
+
+	private void panelInitialize() {
+		makeBlankTopPanel();
+		makeInputIdPanel();
+		makeInputPasswordPanel();
+		makeButtonPanel();
+	}
+
+	private void makeBlankTopPanel() {
+		topPanel = new JPanel();
+		add(topPanel);
+	}
+
+	private void makeInputIdPanel() {
+		inputIdPanel = new JPanel();
+		JLabel idLabel = new JLabel("Id    :               ");
+		inputIdPanel.add(idLabel);
+		guestButton = new JRadioButton("Guest");
+		professorButton = new JRadioButton("Professor");
+		ButtonGroup size = new ButtonGroup();
+		size.add(guestButton);
+		size.add(professorButton);
+		inputIdPanel.add(guestButton);
+		inputIdPanel.add(professorButton);
+		add(inputIdPanel);
+		guestButton.addActionListener(this);
+		professorButton.addActionListener(this);
+	}
+
+	private void makeInputPasswordPanel() {
+		inputPasswordPanel = new JPanel();
+		JLabel passwordLabel = new JLabel("          Password    :              ");
+		inputPasswordPanel.add(passwordLabel);
+		passwordTextField = new JTextField(20);
+		inputPasswordPanel.add(passwordTextField);
+		add(inputPasswordPanel);
+	}
+
+	private void makeButtonPanel() {
+		buttonClickPanel = new JPanel();
+		loginButton = new JButton("로그인");
+		passwordUpdateButton = new JButton("password 변경");
+		buttonClickPanel.add(loginButton);
+		buttonClickPanel.add(passwordUpdateButton);
+		add(buttonClickPanel);
+		loginButton.addActionListener(this);
+		passwordUpdateButton.addActionListener(this);
+		passwordUpdateButton.setEnabled(false);
+		loginButton.setEnabled(false);
+	}
+
+	public void actionPerformed(ActionEvent buttonClickEvent) {	
+		currentPassword = passwordTextField.getText().trim();
+		databaseConnection = new DatabaseConnection();	
+		databaseConnection.connectDataBase();	
+		Statement statement = databaseConnection.getStatement();
+		LoginManager = new LoginManagerWtihDatabase(statement);
+		displayOfInfoSystemAfterLogin = new DisplayOfStudentInfoSystem(statement);
+		ComponentOfSelectedButton = (Component) buttonClickEvent.getSource();
+		selectUserLoginMode(ComponentOfSelectedButton);
+		selectActionAfterPutPassword(ComponentOfSelectedButton);
+	}
+	
+	private void selectUserLoginMode(Component ComponentOfSelectedButton) {
+		checkUserType();
+		if (isGuest) 
+			setAuthorityForGuest();
+		else if (isProfessor) {
+			setAuthorityForProfessor();
+			LoginManager.checkInitialPassword();
+		}
+	}
+	
+	private void setAuthorityForGuest() {
+		passwordTextField.setEditable(false);
+		loginButton.setEnabled(true);
+		passwordUpdateButton.setEnabled(false);		
+	}
+	
+	private void setAuthorityForProfessor() {
+		passwordTextField.setEditable(true);
+		loginButton.setEnabled(true);
+		passwordUpdateButton.setEnabled(true);
+	}
+	
+	private void placeRestrictionOfButtonSelection() {
+		DisplayOfStudentInfoSystem.addButton.setEnabled(false);
+		DisplayOfStudentInfoSystem.updateButton.setEnabled(false);
+		DisplayOfStudentInfoSystem.deleteButton.setEnabled(false);
+	}
+	
+	private void checkUserType() {
+		if(ComponentOfSelectedButton == guestButton) {
+			isGuest = true;
+		}
+		else if(ComponentOfSelectedButton == professorButton) {
+			isProfessor = true;
+		}
+	}
+	
+	private void selectActionAfterPutPassword(Component ComponentOfSelectedButton) {
+		checkSelectedButtonType();
+		if (isLogin) 
+			clickLoginButton();
+		if (isPasswordUpdate) 
+			checkPasswordInputStatus();
+	}
+	
+	private void checkSelectedButtonType(){
+		if(ComponentOfSelectedButton==loginButton)
+			isLogin = true;
+		if(ComponentOfSelectedButton==passwordUpdateButton)
+			isPasswordUpdate = true;
+	}
+
+	private void clickLoginButton() {
+		if (isGuest) {
+			displayOfInfoSystemAfterLogin.setStudentInformationSystemJFrame();
+			placeRestrictionOfButtonSelection();
+		} 
+		if (isProfessor)		
+			LoginByProfessor();	
+		passwordTextField.setText("");
+	}
+	
+	private void LoginByProfessor(){
+		LoginManager.checkInitialPassword();
+		if(LoginManager.checkInputPasswordWithSavedPassword(currentPassword))
+			displayOfInfoSystemAfterLogin.setStudentInformationSystemJFrame();
+		else
+			showFailMessage("옳지 않은 비밀번호입니다.");
+	}
+
+	private void checkPasswordInputStatus() {
+		if (currentPassword.isEmpty()) 
+			showFailMessage("password필드에 기존의 password를 입력하세요.");
+		else 
+			updateToNewPassword();
+		passwordTextField.setText("");
+	}
+	
+	private void updateToNewPassword(){
+		if (LoginManager.checkInputPasswordWithSavedPassword(currentPassword)) {
+			String newPassword = JOptionPane.showInputDialog("변경할 password를 입력하세요 : ");
+			LoginManager.executeProfessorPasswordUpdateQuerey(newPassword);
+		} 
+		else 
+			showFailMessage("기존password 불일치.");
+	}
+	
+	private void showFailMessage(String failMessage){
+		JOptionPane.showMessageDialog(null, failMessage, "오 류", JOptionPane.WARNING_MESSAGE);
+	}
+}
