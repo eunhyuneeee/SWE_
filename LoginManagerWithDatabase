@@ -1,0 +1,63 @@
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.swing.JOptionPane;
+
+public class LoginManagerWtihDatabase {
+	Statement SQLStatement = null;
+	ResultSet resultSetFromQuery = null;
+	String checkSQL, executingSQL = null;
+
+	public LoginManagerWtihDatabase(Statement SQLStatement) {
+		this.SQLStatement = SQLStatement;
+	}
+
+	public void checkInitialPassword() { 
+		try {
+			checkSQL = "select Login_password from student_login";
+			resultSetFromQuery = SQLStatement.executeQuery(checkSQL);
+			if (!resultSetFromQuery.next())
+				saveProfessorPasswordInDatabase(); 
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+	}
+	
+	public void saveProfessorPasswordInDatabase() { 
+		String initialPassword = JOptionPane.showInputDialog("초기 password를 설정하세요 : ");
+		if (initialPassword != null) {
+			executingSQL = "insert into student_login values" + "('" + initialPassword + "')";
+			try {
+				SQLStatement.executeUpdate(executingSQL);
+			} catch (SQLException exception) {
+				exception.printStackTrace();
+			}
+		}
+	}
+
+	public boolean checkInputPasswordWithSavedPassword(String professorPassword) { 
+		try {
+			checkSQL = "select * from student_login where Login_password = '" + professorPassword + "' ";
+			resultSetFromQuery = SQLStatement.executeQuery(checkSQL);
+			if (resultSetFromQuery.next()) 
+				return true;			
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return false;
+	}
+
+	public void executeProfessorPasswordUpdateQuerey(String updatedProfessorPassword) { 
+		try {
+			if (updatedProfessorPassword.isEmpty()) 
+				JOptionPane.showMessageDialog(null, "변경할 password값을 입력하세요.", "오 류", JOptionPane.WARNING_MESSAGE);
+			else {
+				executingSQL = "update student_login set Login_password = '" + updatedProfessorPassword + "'";
+				SQLStatement.executeUpdate(executingSQL);
+			}
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+	}
+}
