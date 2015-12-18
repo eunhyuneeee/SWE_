@@ -1,0 +1,134 @@
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class StudentInfoManagerWithDatabase {
+	Statement SQLStatement = null;
+	ResultSet resultSetFromQuery = null;
+	String executingSQL = null;
+	String checkId, notExistIdInDatabase = null;;
+	boolean dataIsNull;
+
+	public StudentInfoManagerWithDatabase(Statement SQLStatement) {
+		this.SQLStatement = SQLStatement;
+	}
+
+	public boolean addStudentInfoToDatabase(String Id, String Name, String Department, String PhoneNumber) {
+		try {
+			checkId = checkIfDatabaseIncludeSameID(Id);
+			if (checkId == notExistIdInDatabase) {
+				executingSQL = "insert into student_info values" + "('" + Id + "','" + Name + "','" + Department + "','"
+						+ PhoneNumber + "')";
+				SQLStatement.executeUpdate(executingSQL);
+			} else
+				return false;
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return true;
+	}
+
+	public boolean updateStudentInfoOnDatabase(String Id, String PhoneNumber) {
+		try {
+			checkId = checkIfDatabaseIncludeSameID(Id);
+			if (checkId != notExistIdInDatabase) {
+				executingSQL = "update student_info set Phone_num = '" + PhoneNumber + "' where Id= '" + Id + "'";
+				SQLStatement.executeUpdate(executingSQL);
+			} else
+				return false;
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return true;
+	}
+
+	public boolean deleteStudentInfoOnDatabase(String Id) {
+		try {
+			checkId = checkIfDatabaseIncludeSameID(Id);
+			if (checkId == notExistIdInDatabase)
+				return false;
+			else {
+				executingSQL = "delete from student_info where Id= '" + Id + "'";
+				SQLStatement.executeUpdate(executingSQL);
+			}
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return true;
+	}
+
+	public boolean searchStudentInfoFromDatabase(String Id) {
+		try {
+			checkId = checkIfDatabaseIncludeSameID(Id);
+			if (checkId == notExistIdInDatabase)
+				return false;
+			else {
+				executingSQL = "select * from student_info WHERE Id LIKE '" + Id + "' ";
+				SQLStatement.executeQuery(executingSQL);
+				printSearchResultOnDisplayField();
+			}
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return true;
+	}
+
+	public String checkIfDatabaseIncludeSameID(String checkId) throws SQLException {
+		String checkSQL = "select Id from student_info where Id LIKE '" + checkId + "' ";
+		resultSetFromQuery = SQLStatement.executeQuery(checkSQL);
+		isResultSetNull(resultSetFromQuery);
+		if (dataIsNull)
+			return notExistIdInDatabase;
+		else
+			return checkId;
+	}
+
+	public void isResultSetNull(ResultSet resultSetFromQuery) throws SQLException {
+		if (resultSetFromQuery.next())
+			dataIsNull = false;
+		else
+			dataIsNull = true;
+	}
+
+	public void showAllStudentInfoFromDatabase() {
+		executingSQL = "select * from student_info ";
+		printSearchResultOnDisplayField();
+	}
+
+	public boolean printSearchResultOnDisplayField() {
+		try {
+			resultSetFromQuery = SQLStatement.executeQuery(executingSQL);
+			if (resultSetFromQuery.next()) {
+				resultSetFromQuery = SQLStatement.getResultSet();
+				resultSetFromQuery.beforeFirst();
+				printDatabaseColumnNameOnDisplayField();
+				while (resultSetFromQuery.next()) {
+					getStringFromResultSet(resultSetFromQuery);
+				}
+			} else
+				return false;
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return true;
+	}
+	
+	public void printDatabaseColumnNameOnDisplayField() {
+		DisplayOfStudentInfoSystem.displayField.setText("");
+		DisplayOfStudentInfoSystem.displayField
+				.append("  =====================================================" + "\n");
+		DisplayOfStudentInfoSystem.displayField.append("       학번 \t이름 \t  학과 \t       핸드폰번호  \n");
+		DisplayOfStudentInfoSystem.displayField
+				.append("  =====================================================" + "\n");
+	}
+
+	public void getStringFromResultSet(ResultSet resultSetFromQuery) throws SQLException {
+		this.resultSetFromQuery = resultSetFromQuery;
+		String searchResultId = resultSetFromQuery.getString(1);
+		String searchResultName = resultSetFromQuery.getString(2);
+		String searchResultDepart = resultSetFromQuery.getString(3);
+		String searchResultPhoneNumber = resultSetFromQuery.getString(4);
+		DisplayOfStudentInfoSystem.displayField.append("  " + searchResultId + "\t" + searchResultName + "\t"
+				+ searchResultDepart + "\t      " + searchResultPhoneNumber + "\n");
+	}
+}
